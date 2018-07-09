@@ -9,5 +9,5 @@ This task runs a simple test on github.com using basic Selenium WebDriver API: l
 #### Launch
 Run "run.bat" first.
 ```
-npm run webdriver
+npm test
 ```
