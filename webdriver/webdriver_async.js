@@ -1,5 +1,6 @@
 const webdriver = require("selenium-webdriver");
 const until = webdriver.until;
+let currentRepoName = "";
 
 function createDriver() {
     var driver = new webdriver.Builder()
@@ -32,7 +33,8 @@ function signIn(login, password) {
 
 function createRepo() {
     return browser.findElement(webdriver.By.css('strong.reponame-suggestion')).getText().then((text) => {
-        return browser.findElement(webdriver.By.id('repository_name')).sendKeys(text);
+        currentRepoName = text;
+        return browser.findElement(webdriver.By.id('repository_name')).sendKeys(currentRepoName);
     }).then(() => {
         return browser.findElement(webdriver.By.id('repository_auto_init')).click();
     }).then(() => {
@@ -54,6 +56,13 @@ browser.get('https://github.com/login').then(() => {
     return createRepo();
 }).then(() => {
     return browser.findElement(webdriver.By.linkText('Settings')).click();
+}).then(() => {
+    return browser.findElement(webdriver.By.xpath('//summary[contains(text(), "Delete this repository")]')).click();
+}).then(() => {
+    return browser.findElement(webdriver.By.css('input[aria-label="Type in the name of the repository to confirm that you want to delete this repository."]'))
+        .sendKeys(currentRepoName);
+}).then(() => {
+    return browser.findElement(webdriver.By.xpath('//button[contains(text(), "I understand the consequences, delete this repository")]')).click();
 }).then(() => {
     closeBrowser();
 }).catch((err) => {
