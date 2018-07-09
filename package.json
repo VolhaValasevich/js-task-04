@@ -4,11 +4,12 @@
   "description": "",
   "main": "demo1.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webdriver": "node webdriver/webdriver_async.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "selenium-webdriver": "2.40.0"
+    "selenium-webdriver": "3.3.0"
   }
 }

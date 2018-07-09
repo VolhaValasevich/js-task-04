@@ -1,4 +1,5 @@
-var webdriver = require("selenium-webdriver");
+const webdriver = require("selenium-webdriver");
+const until = webdriver.until;
 
 function createDriver() {
     var driver = new webdriver.Builder()
@@ -12,12 +13,6 @@ function createDriver() {
 
 var browser = createDriver();
 
-function logTitle() {
-    browser.getTitle().then(function (title) {
-        console.log('Current Page Title: ' + title);
-    });
-}
-
 function clickLink(link) {
     link.click();
 }
@@ -27,57 +22,42 @@ function handleFailure(err) {
     closeBrowser();
 }
 
-function findMostRelevant() {
-    return browser.findElements(webdriver.By.css('a.product-name')).then(function (result) {
-        return result[0];
-    });
+function signIn(login, password) {
+    return browser.findElement(webdriver.By.id('login_field')).sendKeys(login).then(() => {
+        return browser.findElement(webdriver.By.id('password')).sendKeys(password);
+    }).then(() => {
+        return browser.findElement(webdriver.By.name('commit')).click();
+    })
 }
 
-function signIn(email, password) {
-    return browser.findElement(webdriver.By.id("email")).sendKeys(email).then(() => {
-                return browser.findElement(webdriver.By.id("passwd")).sendKeys(password);
-            })
+function createRepo() {
+    return browser.findElement(webdriver.By.css('strong.reponame-suggestion')).getText().then((text) => {
+        return browser.findElement(webdriver.By.id('repository_name')).sendKeys(text);
+    }).then(() => {
+        return browser.findElement(webdriver.By.id('repository_auto_init')).click();
+    }).then(() => {
+        return browser.wait(until.elementLocated(webdriver.By.css('div > button[type="submit"]')), 2000).then((el) => {
+            el.click();
+        }); 
+    })
 }
-
-function proceedToCheckout() {
-    return browser.wait(() => {
-        browser.findElement(webdriver.By.css('a[title="Proceed to checkout"]')).click();
-    }, 2000);
-}
-
 
 function closeBrowser() {
     browser.quit();
 }
 
-browser.get('http://automationpractice.com/index.php').then(() => {
-    return browser.findElement(webdriver.By.css('a[title="Women"]')).click();
+browser.get('https://github.com/login').then(() => {
+    return signIn("TestAutomationUser", "Time4Death!");
 }).then(() => {
-    return browser.findElement(webdriver.By.id("layered_category_4")).click();
+    return browser.findElement(webdriver.By.linkText('New repository')).click();
 }).then(() => {
-    //add slider drag and drop here
+    return createRepo();
 }).then(() => {
-    return browser.findElement(webdriver.By.linkText("Blouse")).click();
+    return browser.findElement(webdriver.By.linkText('Settings')).click();
 }).then(() => {
-    return browser.findElement(webdriver.By.name("Submit")).click();
-}).then(() => {
-    return proceedToCheckout();
-}).then(() => {
-    return browser.findElement(webdriver.By.css("input.cart_quantity_input")).sendKeys("5");
-}).then(() => {
-    return proceedToCheckout();
-}).then(() => {
-    return signIn('js18test@gmail.com', 'Time4Death!');
-}).then(() => {
-    return proceedToCheckout();
-}).then(() => {
-    return browser.findElement(webdriver.By.id("cgv")).click();
-}).then(() => {
-    return proceedToCheckout();
-}).then(() => {
-
-}).then(() => {
-    browser.quit();
+    closeBrowser();
+}).catch((err) => {
+    handleFailure(err);
 });
 
 
