@@ -39,7 +39,7 @@ function createRepo() {
         return browser.findElement(webdriver.By.id('repository_auto_init')).click();
     }).then(() => {
         return browser.wait(until.elementLocated(webdriver.By.css('div > button[type="submit"]')), 2000).then((el) => {
-            el.click();
+            browser.executeScript("arguments[0].click()", el);
         }); 
     })
 }
